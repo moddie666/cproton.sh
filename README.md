@@ -1,5 +1,5 @@
-#cproton.sh
-##beginnings of an overhaul of the custom proton installer
+# cproton.sh
+## beginnings of an overhaul of the custom proton installer
 
 ```
 ----------------USAGE---------------
