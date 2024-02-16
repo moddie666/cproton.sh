@@ -1,4 +1,20 @@
-# CProton - Custom Proton Installscript
+#cproton.sh
+##beginnings of an overhaul of the custom proton installer
+
+```
+----------------USAGE---------------
+Run './cproton.sh [VersionName]'    
+to download specific versions.      
+ -c ... install most current release
+ -l ... list releases @github       
+ -i ... list installed releases     
+ -h ... print this help text        
+------------------------------------
+```
+
+The original readme of CProton may be read below :)
+
+## CProton - Custom Proton Installscript
 Script to make it easier to update Proton GE to the latest version.
 
 Two simple scripts to help you to install the latest version of GloriousEggroll's custom Proton, which can be found [here](https://github.com/GloriousEggroll/proton-ge-custom)
