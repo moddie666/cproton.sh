@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# https://github.com/moddie666/cproton.sh
+#
 baseuri="https://github.com/GloriousEggroll/proton-ge-custom/releases/download"
 latesturi="https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest"
 releaseuri="https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases"
