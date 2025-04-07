@@ -7,14 +7,8 @@ latesturi="https://api.github.com/repos/GloriousEggroll/proton-ge-custom/release
 releaseuri="https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases"
 parameter="${1}"
 installComplete=false;
-dstpath="$HOME/.steam/root/compatibilitytools.d" #### Destinationforlder of the Proton installations
 restartSteam=2
 autoInstall=false
-releaseurls=$(curl -s $releaseuri | grep -E "browser_download_url.*Proton.*tar.gz")
-if [ "x$releaseurls" = "x" ]
-then echo "failed to fetch releases: [$releaseurls]"
-     exit 1
-fi
 
 #### Set restartSteam=0 to not restart steam after installing Proton (Keep process untouched)
 #### Set restartSteam=1 to autorestart steam after installing Proton
@@ -36,10 +30,23 @@ PrintUsage(){
   echo " -h ... print this help text        "
   echo "------------------------------------"
 }
-
+FindCompatDir(){
+dstpath=~/.steam/debian-installation/compatibilitytools.d #### Destinationforlder of the Proton installations
+while [ ! -d "$dstpath" ]
+do echo "[$dstpath is not a directory]"
+   read -p "Enter path to steams compatibilitytools.d:" dstpath
+done
+}
+GetReleases(){
+releaseurls=$(curl -s $releaseuri | grep -E "browser_download_url.*Proton.*tar.gz")
+  if [ "x$releaseurls" = "x" ]
+  then echo "failed to fetch releases: [$releaseurls]"
+       exit 1
+  fi
+}
 PrintReleases() {
   echo "------------Releases------------ "
-  echo "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases"
+  echo "$releaseuri" #https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases"
   releases=$(sed -r 's#^.*/download/([^/]+)/.*$#\1#g' <<< "$releaseurls")
   for r in $releases
   do echo "$r [$(grep "/$r/" <<< "$releaseurls" | awk -F '"' '{print $4}')]"
@@ -115,14 +122,17 @@ if [ -z "$parameter" ]; then
   PrintUsage
   exit 0
 elif [ "$parameter" == "-l" ]; then
+  GetReleases
   PrintReleases
 elif [ "$parameter" == "-i" ]; then
+  FindCompatDir
   PrintInstalled
   exit 0
 elif [ "$parameter" == "-h" ]; then
   PrintUsage
   exit 0
 elif [ "$parameter" == "-c" ]; then
+  FindCompatDir
   version="$(curl -s $latesturi | grep -E -m1 "tag_name" | cut -d \" -f4)"
   url=$(curl -s $latesturi | grep -E -m1 "browser_download_url.*Proton.*tar.gz" | cut -d \" -f4)
   if [ -d "$dstpath"/"$version" ]; then
@@ -135,6 +145,8 @@ elif [ "$parameter" == "-c" ]; then
   RestartSteamCheck
   exit 0
 else
+  GetReleases
+  FindCompatDir
   url=$(grep "/$parameter/" <<< "$releaseurls" | awk -F '"' '{print $4}')
   if [ -z $url ]
   then echo "no Proton release matches '$parameter'"
@@ -146,6 +158,10 @@ else
     echo "Proton $parameter is already installed."
   else
     echo "Proton $parameter is not installed yet."
+    echo "GET: [$url]"
+    InstallationPrompt
+    RestartSteamCheck
+
   fi
 fi
 
