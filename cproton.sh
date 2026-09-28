@@ -10,6 +10,11 @@ installComplete=false;
 restartSteam=2
 autoInstall=false
 
+set_architecture() {
+  uname -m
+}
+declare architecture=$(set_architecture)
+
 #### Set restartSteam=0 to not restart steam after installing Proton (Keep process untouched)
 #### Set restartSteam=1 to autorestart steam after installing Proton
 #### Set restartSteam=2 to to get a y/n prompt asking if you want to restart Steam after each installation.
@@ -38,7 +43,7 @@ do echo "[$dstpath is not a directory]"
 done
 }
 GetReleases(){
-releaseurls=$(curl -s $releaseuri | grep -E "browser_download_url.*Proton.*tar.gz")
+releaseurls=$(curl -s $releaseuri | grep -E "browser_download_url.*Proton.*tar.gz" | grep -E "$architecture" )
   if [ "x$releaseurls" = "x" ]
   then echo "failed to fetch releases: [$releaseurls]"
        exit 1
@@ -54,6 +59,7 @@ PrintReleases() {
 #  curl -s "$releaseuri" | grep -H "tag_name" | cut -d \" -f4
   echo "-------------------------------- "
 }
+
 
 InstallProtonGE() {
   echo "$url"
@@ -134,7 +140,7 @@ elif [ "$parameter" == "-h" ]; then
 elif [ "$parameter" == "-c" ]; then
   FindCompatDir
   version="$(curl -s $latesturi | grep -E -m1 "tag_name" | cut -d \" -f4)"
-  url=$(curl -s $latesturi | grep -E -m1 "browser_download_url.*Proton.*tar.gz" | cut -d \" -f4)
+  url=$(curl -s $latesturi | grep -E "browser_download_url.*Proton.*tar.gz" | grep -m1  "$architecture" | cut -d \" -f4)
   if [ -d "$dstpath"/"$version" ]; then
     echo "Proton $version is the latest version and is already installed."
   else
